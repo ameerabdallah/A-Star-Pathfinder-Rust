@@ -1,46 +1,69 @@
-use std::marker::PhantomData;
+use std::hash::Hash;
 
-#[derive(Debug)]
+pub(crate) const WALL: char =  '█';
+pub(crate) const OPEN: char =  ' ';
+pub(crate) const START: char =  'O';
+pub(crate) const DESTINATION: char =   'X';
+
+#[derive(Debug, Copy, Clone)]
 pub(crate) enum NodeState {
     Wall,
     Start,
-    Stop,
+    Destination,
     Open,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub(crate) struct Pos {
-    pub x: i8,
-    pub y: i8,
+    pub x: usize,
+    pub y: usize,
 }
 
 
-#[derive(Debug)]
-pub(crate) struct Node<'a> {
-    pub position: Pos,
-    parent: Option<&'a Node<'a>>,
-    node_type: NodeState,
+#[derive(Debug, Clone)]
+pub(crate) struct Node {
+    pub pos: Pos,
+    pub parent: Option<Box<Node>>,
+    pub node_state: NodeState,
     pub g: f64,
     pub h: f64,
     pub f: f64,
 }
 
-impl<'a> Node<'a> {
-    pub(crate) fn new() -> Node<'a> {
+impl Node {
+    pub(crate) fn new() -> Node {
         Node {
-            position: (Pos { x: 0, y: 0 }),
+            pos: (Pos { x: 0, y: 0 }),
             parent: Option::None,
-            node_type: NodeState::Open,
-            g: (0.0),
-            h: (0.0),
-            f: (0.0),
+            node_state: NodeState::Open,
+            g: (f64::MAX),
+            h: (f64::MAX),
+            f: (f64::MAX),
         }
     }
-    pub(crate) fn set_node_type(&mut self, node_type: NodeState) {
-        self.node_type = node_type;
+    pub(crate) fn calculate_f_cost(&mut self) -> f64 {
+        self.f = self.h + self.g;
+        self.f
     }
+}
 
-    pub(crate) fn calculate_f_cost(&mut self) {
-        self.f = self.h + self.h;
+
+
+
+impl<'a> Eq for Node {}
+
+impl<'a> PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.pos.x == other.pos.x && self.pos.y == other.pos.y
+    }
+}
+
+impl Hash for Node {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        let mut hash = 17;
+        hash = ((hash+self.pos.x) << 5) - (hash+self.pos.x);
+        hash = ((hash+self.pos.y) << 5) - (hash+self.pos.y);
+
+        state.write_usize(hash);
     }
 }

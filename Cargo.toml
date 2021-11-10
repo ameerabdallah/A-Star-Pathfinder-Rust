@@ -9,3 +9,6 @@ include = [
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rand = "0.8.4"
+priority-queue = "1.2.0"
+colored = "2"
