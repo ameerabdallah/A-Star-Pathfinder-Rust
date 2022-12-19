@@ -1,9 +1,9 @@
 use std::hash::Hash;
 
-pub(crate) const WALL: char =  '█';
-pub(crate) const OPEN: char =  ' ';
-pub(crate) const START: char =  'O';
-pub(crate) const DESTINATION: char =   'X';
+pub(crate) const WALL: char = '█';
+pub(crate) const OPEN: char = ' ';
+pub(crate) const START: char = 'O';
+pub(crate) const DESTINATION: char = 'X';
 
 #[derive(Debug, Copy, Clone)]
 pub(crate) enum NodeState {
@@ -19,7 +19,6 @@ pub(crate) struct Pos {
     pub y: usize,
 }
 
-
 #[derive(Debug, Clone)]
 pub(crate) struct Node {
     pub pos: Pos,
@@ -33,12 +32,12 @@ pub(crate) struct Node {
 impl Node {
     pub(crate) fn new() -> Node {
         Node {
-            pos: (Pos { x: 0, y: 0 }),
+            pos: Pos { x: 0, y: 0 },
             parent: Option::None,
             node_state: NodeState::Open,
-            g: (f64::MAX),
-            h: (f64::MAX),
-            f: (f64::MAX),
+            g: f64::MAX,
+            h: f64::MAX,
+            f: f64::MAX,
         }
     }
     pub(crate) fn calculate_f_cost(&mut self) -> f64 {
@@ -46,9 +45,6 @@ impl Node {
         self.f
     }
 }
-
-
-
 
 impl<'a> Eq for Node {}
 
@@ -61,8 +57,8 @@ impl<'a> PartialEq for Node {
 impl Hash for Node {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         let mut hash = 17;
-        hash = ((hash+self.pos.x) << 5) - (hash+self.pos.x);
-        hash = ((hash+self.pos.y) << 5) - (hash+self.pos.y);
+        hash = ((hash + self.pos.x) << 5) - (hash + self.pos.x);
+        hash = ((hash + self.pos.y) << 5) - (hash + self.pos.y);
 
         state.write_usize(hash);
     }
